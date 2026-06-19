@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AimLock Pro Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            padding: 30px 0 20px;
+        }
+        .header .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 40px;
+            font-weight: 900;
+            box-shadow: 0 0 40px rgba(231, 76, 60, 0.3);
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #e74c3c, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header p {
+            color: #888;
+            font-size: 14px;
+            margin-top: 5px;
+            -webkit-text-fill-color: #888;
+        }
+        .status-bar {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .status-bar .label {
+            font-size: 13px;
+            color: #888;
+        }
+        .status-bar .value {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+        .status-bar .value.active {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+        .status-bar .value.inactive {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .menu-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 14px;
+            padding: 18px 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .menu-item:active {
+            transform: scale(0.95);
+            background: rgba(255,255,255,0.1);
+        }
+        .menu-item .icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .menu-item .name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .menu-item .desc {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+        .menu-item.active {
+            border-color: rgba(46, 204, 113, 0.3);
+            background: rgba(46, 204, 113, 0.05);
+        }
+        .menu-item.danger {
+            border-color: rgba(231, 76, 60, 0.2);
+        }
+        .menu-item.danger .name {
+            color: #e74c3c;
+        }
+        .menu-item.full {
+            grid-column: 1 / -1;
+        }
+        .slider-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .slider-section .label-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .slider-section .label-row .title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #ccc;
+        }
+        .slider-section .label-row .value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e74c3c;
+        }
+        .slider-section input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: linear-gradient(90deg, #e74c3c, #f39c12);
+            border-radius: 2px;
+            outline: none;
+        }
+        .slider-section input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #e74c3c;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
+        }
+        .preset-section {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .preset-btn {
+            flex: 1;
+            min-width: 60px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #aaa;
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: all 0.3s ease;
+        }
+        .preset-btn:active {
+            transform: scale(0.95);
+        }
+        .preset-btn.active {
+            border-color: #e74c3c;
+            color: #fff;
+            background: rgba(231, 76, 60, 0.15);
+        }
+        .footer {
+            text-align: center;
+            padding: 20px 0 10px;
+            color: #444;
+            font-size: 11px;
+        }
+        .footer .author {
+            color: #666;
+        }
+        .footer .version {
+            color: #333;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .quick-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .quick-toggle .btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+            color: #aaa;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: all 0.3s ease;
+        }
+        .quick-toggle .btn:active {
+            transform: scale(0.95);
+        }
+        .quick-toggle .btn.on {
+            background: rgba(46, 204, 113, 0.15);
+            border-color: rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+        }
+        .quick-toggle .btn.off {
+            background: rgba(231, 76, 60, 0.15);
+            border-color: rgba(231, 76, 60, 0.3);
+            color: #e74c3c;
+        }
+        @media (max-width: 400px) {
+            .menu-grid {
+                gap: 8px;
+            }
+            .menu-item {
+                padding: 14px 10px;
+            }
+            .menu-item .icon {
+                font-size: 22px;
+            }
+            .menu-item .name {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🎯</div>
+            <h1>AimLock Pro</h1>
+            <p>Nguyễn Hồng Hiếu • Silent Aim v3.0</p>
+        </div>
+
+        <div class="status-bar">
+            <span class="label">🔴 Trạng thái</span>
+            <span class="value active" id="statusText">● Đã kích hoạt</span>
+        </div>
+
+        <div class="quick-toggle">
+            <div class="btn on" id="toggleAim" onclick="toggleAim()">🎯 Aim Bot</div>
+            <div class="btn on" id="toggleDrag" onclick="toggleDrag()">🔄 Aim Drag</div>
+        </div>
+
+        <div class="menu-grid">
+            <div class="menu-item active" onclick="showToast('Aim Bot đã được kích hoạt')">
+                <span class="icon">🎯</span>
+                <span class="name">Aim Bot</span>
+                <span class="desc">Tự động bám mục tiêu</span>
+            </div>
+            <div class="menu-item active" onclick="showToast('Aim Drag đã được kích hoạt')">
+                <span class="icon">🔄</span>
+                <span class="name">Aim Drag</span>
+                <span class="desc">Kéo ngắm mượt mà</span>
+            </div>
+            <div class="menu-item" onclick="showToast('Đã bật dự đoán chuyển động')">
+                <span class="icon">📊</span>
+                <span class="name">Dự đoán</span>
+                <span class="desc">Dự đoán di chuyển</span>
+            </div>
+            <div class="menu-item" onclick="showToast('Đã bật chống giật')">
+                <span class="icon">🔫</span>
+                <span class="name">Chống giật</span>
+                <span class="desc">Giảm giật súng</span>
+            </div>
+            <div class="menu-item" onclick="showToast('Đã bật tối ưu FOV')">
+                <span class="icon">👁️</span>
+                <span class="name">Tối ưu FOV</span>
+                <span class="desc">Mở rộng góc nhìn</span>
+            </div>
+            <div class="menu-item" onclick="showToast('Đã bật chế độ ẩn')">
+                <span class="icon">👻</span>
+                <span class="name">Chế độ ẩn</span>
+                <span class="desc">Không bị phát hiện</span>
+            </div>
+            <div class="menu-item full" onclick="showToast('Đã áp dụng cấu hình mặc định')">
+                <span class="icon">⚙️</span>
+                <span class="name">Cấu hình mặc định</span>
+                <span class="desc">Khôi phục cài đặt gốc</span>
+            </div>
+            <div class="menu-item full danger" onclick="showToast('Đã reset tất cả cài đặt')">
+                <span class="icon">🗑️</span>
+                <span class="name">Reset toàn bộ</span>
+                <span class="desc">Xóa cấu hình tùy chỉnh</span>
+            </div>
+        </div>
+
+        <div class="slider-section">
+            <div class="label-row">
+                <span class="title">🎯 Độ nhạy Aim</span>
+                <span class="value" id="sensitivityValue">85%</span>
+            </div>
+            <input type="range" min="10" max="100" value="85" id="sensitivitySlider" oninput="updateSensitivity(this.value)">
+            <div class="preset-section">
+                <div class="preset-btn" onclick="setSensitivity(60)">Thấp</div>
+                <div class="preset-btn active" onclick="setSensitivity(85)">Trung bình</div>
+                <div class="preset-btn" onclick="setSensitivity(100)">Cao</div>
+            </div>
+        </div>
+
+        <div class="slider-section">
+            <div class="label-row">
+                <span class="title">🔄 Tốc độ Drag</span>
+                <span class="value" id="dragSpeedValue">65%</span>
+            </div>
+            <input type="range" min="10" max="100" value="65" id="dragSpeedSlider" oninput="updateDragSpeed(this.value)">
+            <div class="preset-section">
+                <div class="preset-btn" onclick="setDragSpeed(40)">Chậm</div>
+                <div class="preset-btn active" onclick="setDragSpeed(65)">Trung bình</div>
+                <div class="preset-btn" onclick="setDragSpeed(90)">Nhanh</div>
+            </div>
+        </div>
+
+        <div class="slider-section">
+            <div class="label-row">
+                <span class="title">📏 Phạm vi FOV</span>
+                <span class="value" id="fovValue">15°</span>
+            </div>
+            <input type="range" min="5" max="30" value="15" id="fovSlider" oninput="updateFOV(this.value)">
+            <div class="preset-section">
+                <div class="preset-btn" onclick="setFOV(10)">Hẹp</div>
+                <div class="preset-btn active" onclick="setFOV(15)">Trung bình</div>
+                <div class="preset-btn" onclick="setFOV(25)">Rộng</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="author">Nguyễn Hồng Hiếu © 2026</div>
+            <div class="version">AimLock Pro v3.0 • Silent Aim</div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Toast notification
+        let toastTimeout;
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // Toggle Aim
+        let aimEnabled = true;
+        function toggleAim() {
+            aimEnabled = !aimEnabled;
+            const btn = document.getElementById('toggleAim');
+            btn.textContent = aimEnabled ? '🎯 Aim Bot' : '🎯 Aim Bot (OFF)';
+            btn.className = aimEnabled ? 'btn on' : 'btn off';
+            showToast(aimEnabled ? '✅ Đã bật Aim Bot' : '❌ Đã tắt Aim Bot');
+        }
+
+        // Toggle Drag
+        let dragEnabled = true;
+        function toggleDrag() {
+            dragEnabled = !dragEnabled;
+            const btn = document.getElementById('toggleDrag');
+            btn.textContent = dragEnabled ? '🔄 Aim Drag' : '🔄 Aim Drag (OFF)';
+            btn.className = dragEnabled ? 'btn on' : 'btn off';
+            showToast(dragEnabled ? '✅ Đã bật Aim Drag' : '❌ Đã tắt Aim Drag');
+        }
+
+        // Update Sensitivity
+        function updateSensitivity(value) {
+            document.getElementById('sensitivityValue').textContent = value + '%';
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        function setSensitivity(value) {
+            document.getElementById('sensitivitySlider').value = value;
+            updateSensitivity(value);
+            showToast('✅ Đã đặt độ nhạy: ' + value + '%');
+        }
+
+        // Update Drag Speed
+        function updateDragSpeed(value) {
+            document.getElementById('dragSpeedValue').textContent = value + '%';
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        function setDragSpeed(value) {
+            document.getElementById('dragSpeedSlider').value = value;
+            updateDragSpeed(value);
+            showToast('✅ Đã đặt tốc độ drag: ' + value + '%');
+        }
+
+        // Update FOV
+        function updateFOV(value) {
+            document.getElementById('fovValue').textContent = value + '°';
+            document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        function setFOV(value) {
+            document.getElementById('fovSlider').value = value;
+            updateFOV(value);
+            showToast('✅ Đã đặt FOV: ' + value + '°');
+        }
+
+        // Menu item click feedback
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (!this.classList.contains('full')) {
+                    this.classList.toggle('active');
+                }
+            });
+        });
+
+        // Status bar animation
+        let statusActive = true;
+        setInterval(() => {
+            statusActive = !statusActive;
+            const statusText = document.getElementById('statusText');
+            if (statusActive) {
+                statusText.textContent = '● Đã kích hoạt';
+                statusText.className = 'value active';
+            } else {
+                statusText.textContent = '○ Đang chờ';
+                statusText.className = 'value inactive';
+            }
+        }, 5000);
+
+        // Save settings to localStorage
+        function saveSettings() {
+            const settings = {
+                sensitivity: document.getElementById('sensitivitySlider').value,
+                dragSpeed: document.getElementById('dragSpeedSlider').value,
+                fov: document.getElementById('fovSlider').value,
+                aimEnabled: aimEnabled,
+                dragEnabled: dragEnabled
+            };
+            localStorage.setItem('aimlock_settings', JSON.stringify(settings));
+        }
+
+        // Load settings
+        function loadSettings() {
+            try {
+                const data = JSON.parse(localStorage.getItem('aimlock_settings'));
+                if (data) {
+                    document.getElementById('sensitivitySlider').value = data.sensitivity || 85;
+                    updateSensitivity(data.sensitivity || 85);
+                    document.getElementById('dragSpeedSlider').value = data.dragSpeed || 65;
+                    updateDragSpeed(data.dragSpeed || 65);
+                    document.getElementById('fovSlider').value = data.fov || 15;
+                    updateFOV(data.fov || 15);
+                }
+            } catch(e) {}
+        }
+
+        // Auto-save on change
+        document.querySelectorAll('input[type="range"]').forEach(input => {
+            input.addEventListener('change', saveSettings);
+        });
+
+        // Load on startup
+        loadSettings();
+
+        // Save on page leave
+        window.addEventListener('beforeunload', saveSettings);
+
+        console.log('🎯 AimLock Pro Menu loaded successfully!');
+        console.log('👤 Author: Nguyễn Hồng Hiếu');
+        console.log('📱 Version: 3.0');
+    </script>
+</body>
+</html>
